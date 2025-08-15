@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'lbl_razorpay' => 'Razorpay',
+    'lbl_secret_key' => 'Chave Secreta',
+    'lbl_app_key' => 'Chave do Aplicativo',
+    'lbl_stripe' => 'Stripe',
+    'lbl_paystack' => 'Paystack',
+    'lbl_paypal' => 'Paypal',
+    'lbl_flutterwave' => 'Flutterwave',
+    'lbl_client_id' => 'ID do Cliente',
+    'lbl_airtel_money' => 'Airtel Money',
+    'lbl_phone_pay' => 'PhonePe',
+    'lbl_app_id' => 'ID do Aplicativo',
+    'lbl_merchant_id' => 'ID do Comerciante',
+    'lbl_salt_key' => 'Chave Salt',
+    'lbl_salt_index' => 'Índice Salt',
+    'lbl_midtrans' => 'Midtrans',
+    'lbl_cinet' => 'Cinet',
+    'cinet_siteid' => 'ID do Site',
+    'cinet_apikey' => 'Chave da API',
+    'cinet_secretkey' => 'Chave Secreta',
+    'lbl_sadad' => 'Sadad',
+    'sadad_id' => 'ID Sadad',
+    'sadad_key' => 'Chave Sadad',
+    'sadad_domain' => 'Domínio Sadad',
+];
