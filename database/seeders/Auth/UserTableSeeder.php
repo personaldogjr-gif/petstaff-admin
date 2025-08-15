@@ -29,7 +29,7 @@ class UserTableSeeder extends Seeder
 
         // Add the master administrator, user id of 1
         $avatarPath = config('app.avatar_base_path');
-       
+
         Log::info('UserTableSeeder running...');
 
         $users = [
@@ -48,7 +48,7 @@ class UserTableSeeder extends Seeder
               'updated_at' => Carbon::now(),
               'user_type' => 'admin',
             ],
-            
+
             [
               'first_name' => 'John',
               'last_name' => 'Doe',
@@ -56,7 +56,7 @@ class UserTableSeeder extends Seeder
               'password' => Hash::make('12345678'),
               'mobile' => '1-4578952512',
               'date_of_birth' => Carbon::now()->subYears(25)->format('Y-m-d'),
-              'profile_image' => '/dummy-images/profile/owner/Stella.png',
+              'profile_image' => public_path('/dummy-images/profile/owner/Stella.png'),
               'avatar' => $avatarPath.'male.png',
               'gender' => 'male',
               'email_verified_at' => Carbon::now(),
@@ -90,7 +90,7 @@ class UserTableSeeder extends Seeder
                 'mobile' => '1-7485961545',
                 'date_of_birth' => Carbon::now()->subYears(25)->format('Y-m-d'),
                 'avatar' => $avatarPath.'male.png',
-                'profile_image' => '/dummy-images/profile/owner/Robert.png',
+                'profile_image' => public_path('/dummy-images/profile/owner/Robert.png'),
                 'gender' => 'male',
                 'email_verified_at' => Carbon::now(),
                 'created_at' => Carbon::now(),
@@ -106,7 +106,7 @@ class UserTableSeeder extends Seeder
                 'mobile' => '1-2563987448',
                 'date_of_birth' => Carbon::now()->subYears(25)->format('Y-m-d'),
                 'avatar' => null,
-                'profile_image' => '/dummy-images/profile/owner/Bentley.png',
+                'profile_image' => public_path('/dummy-images/profile/owner/Bentley.png'),
                 'gender' => 'other',
                 'email_verified_at' => Carbon::now(),
                 'created_at' => Carbon::now(),
@@ -122,7 +122,7 @@ class UserTableSeeder extends Seeder
                 'mobile' => '1-3565478912',
                 'date_of_birth' => Carbon::now()->subYears(25)->format('Y-m-d'),
                 'avatar' => null,
-                'profile_image' => '/dummy-images/profile/owner/Brian.png',
+                'profile_image' => public_path('/dummy-images/profile/owner/Brian.png'),
                 'gender' => 'female',
                 'email_verified_at' => Carbon::now(),
                 'created_at' => Carbon::now(),
@@ -138,7 +138,7 @@ class UserTableSeeder extends Seeder
                 'mobile' => '1-8574965162',
                 'date_of_birth' => Carbon::now()->subYears(25)->format('Y-m-d'),
                 'avatar' => null,
-                'profile_image' => '/dummy-images/profile/owner/Stella.png',
+                'profile_image' => public_path('/dummy-images/profile/owner/Stella.png'),
                 'gender' => 'male',
                 'email_verified_at' => Carbon::now(),
                 'created_at' => Carbon::now(),
@@ -154,7 +154,7 @@ class UserTableSeeder extends Seeder
                 'mobile' => '1-5674587110',
                 'date_of_birth' => Carbon::now()->subYears(25)->format('Y-m-d'),
                 'avatar' => null,
-                'profile_image' => '/dummy-images/profile/owner/Gilbert.png',
+                'profile_image' => public_path('/dummy-images/profile/owner/Gilbert.png'),
                 'gender' => 'male',
                 'email_verified_at' => Carbon::now(),
                 'created_at' => Carbon::now(),
@@ -170,7 +170,7 @@ class UserTableSeeder extends Seeder
                 'mobile' => '1-6589741258',
                 'date_of_birth' => Carbon::now()->subYears(25)->format('Y-m-d'),
                 'avatar' => null,
-                'profile_image' => '/dummy-images/profile/owner/Pedra.png',
+                'profile_image' => public_path('/dummy-images/profile/owner/Pedra.png'),
                 'gender' => 'female',
                 'email_verified_at' => Carbon::now(),
                 'created_at' => Carbon::now(),
@@ -186,7 +186,7 @@ class UserTableSeeder extends Seeder
                 'mobile' => '1-5687412589',
                 'date_of_birth' => Carbon::now()->subYears(25)->format('Y-m-d'),
                 'avatar' => null,
-                'profile_image' => '/dummy-images/profile/owner/Stella.png',
+                'profile_image' => public_path('/dummy-images/profile/owner/Stella.png'),
                 'gender' => 'female',
                 'email_verified_at' => Carbon::now(),
                 'created_at' => Carbon::now(),
@@ -202,7 +202,7 @@ class UserTableSeeder extends Seeder
                 'mobile' => '1-6352897456',
                 'date_of_birth' => Carbon::now()->subYears(25)->format('Y-m-d'),
                 'avatar' => null,
-                'profile_image' => '/dummy-images/profile/owner/Stella.png',
+                'profile_image' => public_path('/dummy-images/profile/owner/Stella.png'),
                 'gender' => 'female',
                 'email_verified_at' => Carbon::now(),
                 'created_at' => Carbon::now(),
@@ -218,7 +218,7 @@ class UserTableSeeder extends Seeder
                 'mobile' => '1-3652417895',
                 'date_of_birth' => Carbon::now()->subYears(25)->format('Y-m-d'),
                 'avatar' => null,
-                'profile_image' => '/dummy-images/profile/owner/Stella.png',
+                'profile_image' => public_path('/dummy-images/profile/owner/Stella.png'),
                 'gender' => 'female',
                 'email_verified_at' => Carbon::now(),
                 'created_at' => Carbon::now(),
@@ -234,17 +234,17 @@ class UserTableSeeder extends Seeder
             //   'mobile' => '44-5289568745',
             //   'date_of_birth' => Carbon::now()->subYears(25)->format('Y-m-d'),
             //   'avatar' => $avatarPath.'male.png',
-            //   'profile_image' => '/dummy-images/profile/Admin/super_admin.png',
+            //   'profile_image' => public_path('/dummy-images/profile/Admin/super_admin.png'),
             //   'gender' => 'male',
             //   'email_verified_at' => Carbon::now(),
             //   'created_at' => Carbon::now(),
             //   'updated_at' => Carbon::now(),
             //   'user_type' => 'demo_admin',
             // ]
-            
-           
+
+
         ];
-        
+
         if (env('IS_DUMMY_DATA')) {
           foreach ($users as $key => $user_data) {
               // Verificar se o usuário já existe
@@ -260,15 +260,15 @@ class UserTableSeeder extends Seeder
 
               if (isset($user_data['address'])) {
                 $addresses = $user_data['address'];
-                
+
                 foreach($addresses as $addressData){
                     $address = new Address($addressData);
                     $user->address()->save($address);
                 }
               }
-        
+
               $user->assignRole($user_data['user_type']);
-            
+
               Log::info('User created: ' . $user->email);
               event(new UserCreated($user));
               if (isset($featureImage)) {
