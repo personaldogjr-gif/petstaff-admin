@@ -2,9 +2,11 @@
 /public/hot
 /public/storage
 /public/vendor
+/public/media/**.*
 /storage/*.key
+/storage/media-library/temp/**.*
+/stubs
 /vendor
-/worker.log
 .env
 .phpunit.result.cache
 Homestead.json
