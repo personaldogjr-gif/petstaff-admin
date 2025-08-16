@@ -9,3 +9,7 @@ services:
       - ./public:/var/www/html/public
     depends_on:
       - app
+
+  mysql:
+    ports:
+      - "127.0.0.1:3306:3306"
