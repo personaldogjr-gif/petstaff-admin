@@ -2,9 +2,9 @@
 /public/hot
 /public/storage
 /public/vendor
-/public/media/**.*
+/public/media/**/*.*
 /storage/*.key
-/storage/media-library/temp/**.*
+/storage/media-library/temp/**/*.*
 /stubs
 /vendor
 .env
