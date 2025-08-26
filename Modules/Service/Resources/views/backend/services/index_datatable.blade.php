@@ -73,7 +73,7 @@
                         <div class="input-group flex-nowrap">
                             <span class="input-group-text" id="addon-wrapping"><i class="icon-Search"></i></span>
                             <input type="text" class="form-control form-control-sm dt-search" placeholder="Buscar..." aria-label="Buscar" aria-describedby="addon-wrapping">
-                            
+
                         </div>
                         @hasPermission('add_service')
                             <x-buttons.offcanvas target='#form-offcanvas' title="{{ __('Criar') }} {{ __($create_title) }}" class=" d-flex align-items-center gap-1">
@@ -85,7 +85,7 @@
                     </x-slot>
                 </x-backend.section-header>
         </div>
-        <div class="card-body ">            
+        <div class="card-body ">
             <table id="datatable" class="table table-striped border table-responsive">
             </table>
         </div>
@@ -177,14 +177,14 @@
                 name: 'category_id',
                 title: "{{ __('service.lbl_category_id') }}"
             },
-            { 
-                data: 'updated_at', 
-                name: 'updated_at',  
-                title: "{{ __('service.lbl_updated_at') }}", 
+            {
+                data: 'updated_at',
+                name: 'updated_at',
+                title: "{{ __('service.lbl_updated_at') }}",
                 width: '15%',
                 visible: false
             },
-            @if (!$is_single_branch)
+            @if (!isset($is_single_branch) || !$is_single_branch)
                 {
                     data: 'branches_count',
                     name: 'branches_count',
@@ -256,7 +256,7 @@
 
                          column_service_type: $('#column_service_type').val(), // Add subcategory filter value
 
-                        
+
                     }
                 }
             });
