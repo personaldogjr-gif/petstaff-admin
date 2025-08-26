@@ -4,26 +4,25 @@ namespace Modules\Pet\Http\Controllers\Backend\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Modules\Pet\Models\Pet;
+use Modules\Pet\Models\Surgery;
 
 class SurgeryController extends Controller
 {
     public function getUserPetSurgeries(int $pet_id)
     {
-        $pet_exists = DB::table('pets')
-            ->where('id', $pet_id)
+        $pet = Pet::where('id', $pet_id)
             ->where('user_id', auth()->id())
-            ->exists();
+            ->first();
 
-        if (! $pet_exists) {
+        if (! $pet) {
             return response()->json([
                 'message' => 'Pet not found'
             ], 404);
         }
 
-        $surgeries = DB::table('user_pet_surgeries')
-            ->where('pet_id', $pet_id)
+        $surgeries = Surgery::where('pet_id', $pet_id)
             ->orderBy('data_cirurgia', 'desc')
             ->get();
 
@@ -34,51 +33,46 @@ class SurgeryController extends Controller
 
     public function storeUserPetSurgery(Request $request, int $pet_id)
     {
-        $pet_exists = DB::table('pets')
-            ->where('id', $pet_id)
+        $pet = Pet::where('id', $pet_id)
             ->where('user_id', auth()->id())
-            ->exists();
+            ->first();
 
-        if (! $pet_exists) {
+        if (! $pet) {
             return response()->json([
                 'message' => 'Pet not found'
             ], 404);
         }
 
-        $data = $request->only(['nome', 'data_cirurgia', 'data_recuperacao', 'veterinario', 'clinica', 'tipo_cirurgia', 'observacoes']);
+        $surgery = new Surgery($request->only(['nome', 'data_cirurgia', 'data_recuperacao', 'veterinario', 'clinica', 'tipo_cirurgia', 'observacoes']));
 
         if ($request->hasFile('foto')) {
-            $data['foto'] = $request->file('foto')->store('surgeries', 'public');
+            $surgery->foto = $request->file('foto')->store('surgeries', 'public');
         }
 
-        $data['pet_id'] = $pet_id;
-
-        $inserted_id = DB::table('user_pet_surgeries')->insertGetId($data);
+        $surgery->pet_id = $pet_id;
+        $surgery->save();
 
         return response()->json([
-            'inserted_id' => $inserted_id,
+            'inserted_id' => $surgery->id,
             'message' => 'Cirurgia adicionada com sucesso!'
         ], 201);
     }
 
     public function updateUserPetSurgery(Request $request, int $pet_id, int $surgery_id)
     {
-        $pet_exists = DB::table('pets')
-            ->where('id', $pet_id)
+        $pet = Pet::where('id', $pet_id)
             ->where('user_id', auth()->id())
-            ->exists();
+            ->first();
 
-        if (! $pet_exists) {
+        if (! $pet) {
             return response()->json([
                 'message' => 'Pet not found'
             ], 404);
         }
 
-        $surgery = DB::table('user_pet_surgeries')
-            ->where('id', $surgery_id)
+        $surgery = Surgery::where('id', $surgery_id)
             ->where('pet_id', $pet_id)
-            ->select(['foto'])
-            ->exists();
+            ->first();
 
         if (! $surgery) {
             return response()->json([
@@ -86,21 +80,14 @@ class SurgeryController extends Controller
             ], 404);
         }
 
-        $data = $request->only(['nome', 'data_cirurgia', 'data_recuperacao', 'veterinario', 'clinica', 'tipo_cirurgia', 'observacoes']);
+        $surgery->fill($request->only(['nome', 'data_cirurgia', 'data_recuperacao', 'veterinario', 'clinica', 'tipo_cirurgia', 'observacoes']));
 
         if ($request->hasFile('foto')) {
-            if (!empty($surgery->foto) && Storage::disk('public')->exists($surgery->foto)) {
-                Storage::disk('public')->delete($surgery->foto);
-            }
-
-            $data['foto'] = $request->file('foto')->store('surgeries', 'public');
+            $surgery->deleteFoto();
+            $surgery->foto = $request->file('foto')->store('surgeries', 'public');
         }
 
-        $data['updated_at'] = now();
-
-        DB::table('user_pet_surgeries')
-            ->where('id', $surgery_id)
-            ->update($data);
+        $surgery->save();
 
         return response()->json([
             'message' => 'Cirurgia atualizada com sucesso!'
@@ -109,22 +96,19 @@ class SurgeryController extends Controller
 
     public function deleteUserPetSurgery(int $pet_id, int $surgery_id)
     {
-        $pet_exists = DB::table('pets')
-            ->where('id', $pet_id)
+        $pet = Pet::where('id', $pet_id)
             ->where('user_id', auth()->id())
-            ->exists();
+            ->first();
 
-        if (! $pet_exists) {
+        if (! $pet) {
             return response()->json([
                 'message' => 'Pet not found'
             ], 404);
         }
 
-        $surgery = DB::table('user_pet_surgeries')
-            ->where('id', $surgery_id)
+        $surgery = Surgery::where('id', $surgery_id)
             ->where('pet_id', $pet_id)
-            ->select(['foto'])
-            ->exists();
+            ->first();
 
         if (! $surgery) {
             return response()->json([
@@ -132,13 +116,8 @@ class SurgeryController extends Controller
             ], 404);
         }
 
-        if (!empty($surgery->foto) && Storage::disk('public')->exists($surgery->foto)) {
-            Storage::disk('public')->delete($surgery->foto);
-        }
-
-        DB::table('user_pet_surgeries')
-            ->where('id', $surgery_id)
-            ->delete();
+        $surgery->deleteFoto();
+        $surgery->delete();
 
         return response()->json([
             'message' => 'Cirurgia deletada com sucesso!'

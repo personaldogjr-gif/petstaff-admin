@@ -4,25 +4,24 @@ namespace Modules\Pet\Http\Controllers\Backend\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Modules\Pet\Models\Pet;
+use Modules\Pet\Models\Disease;
 
 class DiseaseController extends Controller
 {
     public function getUserPetDiseases(int $pet_id)
     {
-        $pet_exists = DB::table('pets')
-            ->where('id', $pet_id)
+        $pet = Pet::where('id', $pet_id)
             ->where('user_id', auth()->id())
-            ->exists();
+            ->first();
 
-        if (! $pet_exists) {
+        if (! $pet) {
             return response()->json([
                 'message' => 'Pet not found'
             ], 404);
         }
 
-        $diseases = DB::table('user_pet_diseases')
-            ->where('pet_id', $pet_id)
+        $diseases = Disease::where('pet_id', $pet_id)
             ->orderBy('data_diagnostico', 'desc')
             ->get();
 
@@ -33,18 +32,17 @@ class DiseaseController extends Controller
 
     public function storeUserPetDisease(Request $request, int $pet_id)
     {
-        $pet_exists = DB::table('pets')
-            ->where('id', $pet_id)
+        $pet = Pet::where('id', $pet_id)
             ->where('user_id', auth()->id())
-            ->exists();
+            ->first();
 
-        if (! $pet_exists) {
+        if (! $pet) {
             return response()->json([
                 'message' => 'Pet not found'
             ], 404);
         }
 
-        $data = $request->only([
+        $disease = new Disease($request->only([
             'nome',
             'data_diagnostico',
             'data_cura',
@@ -53,42 +51,39 @@ class DiseaseController extends Controller
             'sintomas',
             'tratamento',
             'observacoes'
-        ]);
-        $data['pet_id'] = $pet_id;
-
-        $inserted_id = DB::table('user_pet_diseases')->insertGetId($data);
+        ]));
+        $disease->pet_id = $pet_id;
+        $disease->save();
 
         return response()->json([
-            'inserted_id' => $inserted_id,
+            'inserted_id' => $disease->id,
             'message' => 'Doença adicionada com sucesso!'
         ], 201);
     }
 
     public function updateUserPetDisease(Request $request, int $pet_id, int $disease_id)
     {
-        $pet_exists = DB::table('pets')
-            ->where('id', $pet_id)
+        $pet = Pet::where('id', $pet_id)
             ->where('user_id', auth()->id())
-            ->exists();
+            ->first();
 
-        if (! $pet_exists) {
+        if (! $pet) {
             return response()->json([
                 'message' => 'Pet not found'
             ], 404);
         }
 
-        $disease_exists = DB::table('user_pet_diseases')
-            ->where('id', $disease_id)
+        $disease = Disease::where('id', $disease_id)
             ->where('pet_id', $pet_id)
-            ->exists();
+            ->first();
 
-        if (! $disease_exists) {
+        if (! $disease) {
             return response()->json([
                 'message' => 'Doença not found'
             ], 404);
         }
 
-        $data = $request->only([
+        $disease->fill($request->only([
             'nome',
             'data_diagnostico',
             'data_cura',
@@ -97,12 +92,8 @@ class DiseaseController extends Controller
             'sintomas',
             'tratamento',
             'observacoes'
-        ]);
-        $data['updated_at'] = now();
-
-        DB::table('user_pet_diseases')
-            ->where('id', $disease_id)
-            ->update($data);
+        ]));
+        $disease->save();
 
         return response()->json([
             'message' => 'Doença atualizada com sucesso!'
@@ -111,31 +102,27 @@ class DiseaseController extends Controller
 
     public function deleteUserPetDisease(int $pet_id, int $disease_id)
     {
-        $pet_exists = DB::table('pets')
-            ->where('id', $pet_id)
+        $pet = Pet::where('id', $pet_id)
             ->where('user_id', auth()->id())
-            ->exists();
+            ->first();
 
-        if (! $pet_exists) {
+        if (! $pet) {
             return response()->json([
                 'message' => 'Pet not found'
             ], 404);
         }
 
-        $disease_exists = DB::table('user_pet_diseases')
-            ->where('id', $disease_id)
+        $disease = Disease::where('id', $disease_id)
             ->where('pet_id', $pet_id)
-            ->exists();
+            ->first();
 
-        if (! $disease_exists) {
+        if (! $disease) {
             return response()->json([
                 'message' => 'Doença not found'
             ], 404);
         }
 
-        DB::table('user_pet_diseases')
-            ->where('id', $disease_id)
-            ->delete();
+        $disease->delete();
 
         return response()->json([
             'message' => 'Doença deletada com sucesso!'

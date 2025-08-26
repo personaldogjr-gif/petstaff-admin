@@ -4,25 +4,24 @@ namespace Modules\Pet\Http\Controllers\Backend\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Modules\Pet\Models\Pet;
+use Modules\Pet\Models\Medication;
 
 class MedicationController extends Controller
 {
     public function getUserPetMedications(int $pet_id)
     {
-        $pet_exists = DB::table('pets')
-            ->where('id', $pet_id)
+        $pet = Pet::where('id', $pet_id)
             ->where('user_id', auth()->id())
-            ->exists();
+            ->first();
 
-        if (! $pet_exists) {
+        if (! $pet) {
             return response()->json([
                 'message' => 'Pet not found'
             ], 404);
         }
 
-        $medications = DB::table('user_pet_medications')
-            ->where('pet_id', $pet_id)
+        $medications = Medication::where('pet_id', $pet_id)
             ->orderBy('date', 'desc')
             ->get();
 
@@ -33,70 +32,62 @@ class MedicationController extends Controller
 
     public function storeUserPetMedication(Request $request, int $pet_id)
     {
-        $pet_exists = DB::table('pets')
-            ->where('id', $pet_id)
+        $pet = Pet::where('id', $pet_id)
             ->where('user_id', auth()->id())
-            ->exists();
+            ->first();
 
-        if (! $pet_exists) {
+        if (! $pet) {
             return response()->json([
                 'message' => 'Pet not found'
             ], 404);
         }
 
-        $data = $request->only([
+        $medication = new Medication($request->only([
             'name',
             'date',
             'recurring',
             'dosage',
             'notes'
-        ]);
-        $data['pet_id'] = $pet_id;
-
-        $inserted_id = DB::table('user_pet_medications')->insertGetId($data);
+        ]));
+        $medication->pet_id = $pet_id;
+        $medication->save();
 
         return response()->json([
-            'inserted_id' => $inserted_id,
+            'inserted_id' => $medication->id,
             'message' => 'Medicação adicionada com sucesso!'
         ], 201);
     }
 
     public function updateUserPetMedication(Request $request, int $pet_id, int $medication_id)
     {
-        $pet_exists = DB::table('pets')
-            ->where('id', $pet_id)
+        $pet = Pet::where('id', $pet_id)
             ->where('user_id', auth()->id())
-            ->exists();
+            ->first();
 
-        if (! $pet_exists) {
+        if (! $pet) {
             return response()->json([
                 'message' => 'Pet not found'
             ], 404);
         }
 
-        $medication_exists = DB::table('user_pet_medications')
-            ->where('id', $medication_id)
+        $medication = Medication::where('id', $medication_id)
             ->where('pet_id', $pet_id)
-            ->exists();
+            ->first();
 
-        if (! $medication_exists) {
+        if (! $medication) {
             return response()->json([
                 'message' => 'Medicação not found'
             ], 404);
         }
 
-        $data = $request->only([
+        $medication->fill($request->only([
             'name',
             'date',
             'recurring',
             'dosage',
             'notes'
-        ]);
-        $data['updated_at'] = now();
-
-        DB::table('user_pet_medications')
-            ->where('id', $medication_id)
-            ->update($data);
+        ]));
+        $medication->save();
 
         return response()->json([
             'message' => 'Medicação atualizada com sucesso!'
@@ -105,31 +96,27 @@ class MedicationController extends Controller
 
     public function deleteUserPetMedication(int $pet_id, int $medication_id)
     {
-        $pet_exists = DB::table('pets')
-            ->where('id', $pet_id)
+        $pet = Pet::where('id', $pet_id)
             ->where('user_id', auth()->id())
-            ->exists();
+            ->first();
 
-        if (! $pet_exists) {
+        if (! $pet) {
             return response()->json([
                 'message' => 'Pet not found'
             ], 404);
         }
 
-        $medication_exists = DB::table('user_pet_medications')
-            ->where('id', $medication_id)
+        $medication = Medication::where('id', $medication_id)
             ->where('pet_id', $pet_id)
-            ->exists();
+            ->first();
 
-        if (! $medication_exists) {
+        if (! $medication) {
             return response()->json([
                 'message' => 'Medicação not found'
             ], 404);
         }
 
-        DB::table('user_pet_medications')
-            ->where('id', $medication_id)
-            ->delete();
+        $medication->delete();
 
         return response()->json([
             'message' => 'Medicação deletada com sucesso!'

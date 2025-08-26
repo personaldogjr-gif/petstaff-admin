@@ -4,26 +4,25 @@ namespace Modules\Pet\Http\Controllers\Backend\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Modules\Pet\Models\Pet;
+use Modules\Pet\Models\Vacina;
 
 class VacinaController extends Controller
 {
     public function getUserPetVacinas(int $pet_id)
     {
-        $pet_exists = DB::table('pets')
-            ->where('id', $pet_id)
+        $pet = Pet::where('id', $pet_id)
             ->where('user_id', auth()->id())
-            ->exists();
+            ->first();
 
-        if (! $pet_exists) {
+        if (! $pet) {
             return response()->json([
                 'message' => 'Pet not found'
             ], 404);
         }
 
-        $vacinas = DB::table('user_pet_vacinas')
-            ->where('pet_id', $pet_id)
+        $vacinas = Vacina::where('pet_id', $pet_id)
             ->orderBy('data_aplicacao', 'desc')
             ->get();
 
@@ -34,50 +33,45 @@ class VacinaController extends Controller
 
     public function storeUserPetVacina(Request $request, int $pet_id)
     {
-        $pet_exists = DB::table('pets')
-            ->where('id', $pet_id)
+        $pet = Pet::where('id', $pet_id)
             ->where('user_id', auth()->id())
-            ->exists();
+            ->first();
 
-        if (! $pet_exists) {
+        if (! $pet) {
             return response()->json([
                 'message' => 'Pet not found'
             ], 404);
         }
 
-        $data = $request->only(['nome', 'data_aplicacao', 'data_reforco', 'cuidador']);
+        $vacina = new Vacina($request->only(['nome', 'data_aplicacao', 'data_reforco', 'cuidador']));
 
         if ($request->hasFile('foto')) {
-            $data['foto'] = $request->file('foto')->store('vacinas', 'public');
+            $vacina->foto = $request->file('foto')->store('vacinas', 'public');
         }
 
-        $data['pet_id'] = $pet_id;
-
-        $inserted_id = DB::table('user_pet_vacinas')->insertGetId($data);
+        $vacina->pet_id = $pet_id;
+        $vacina->save();
 
         return response()->json([
-            'inserted_id' => $inserted_id,
+            'inserted_id' => $vacina->id,
             'message' => 'Vacina adicionada com sucesso!'
         ], 201);
     }
 
     public function updateUserPetVacina(Request $request, int $pet_id, int $vacina_id)
     {
-        $pet_exists = DB::table('pets')
-            ->where('id', $pet_id)
+        $pet = Pet::where('id', $pet_id)
             ->where('user_id', auth()->id())
-            ->exists();
+            ->first();
 
-        if (! $pet_exists) {
+        if (! $pet) {
             return response()->json([
                 'message' => 'Pet not found'
             ], 404);
         }
 
-        $vacina = DB::table('user_pet_vacinas')
-            ->where('id', $vacina_id)
+        $vacina = Vacina::where('id', $vacina_id)
             ->where('pet_id', $pet_id)
-            ->select(['foto'])
             ->first();
 
         if (! $vacina) {
@@ -86,21 +80,14 @@ class VacinaController extends Controller
             ], 404);
         }
 
-        $data = $request->only(['nome', 'data_aplicacao', 'data_reforco', 'cuidador']);
+        $vacina->fill($request->only(['nome', 'data_aplicacao', 'data_reforco', 'cuidador']));
 
         if ($request->hasFile('foto')) {
-            if (!empty($vacina->foto) && Storage::disk('public')->exists($vacina->foto)) {
-                Storage::disk('public')->delete($vacina->foto);
-            }
-
-            $data['foto'] = $request->file('foto')->store('vacinas', 'public');
+            $vacina->deleteFoto();
+            $vacina->foto = $request->file('foto')->store('vacinas', 'public');
         }
 
-        $data['updated_at'] = now();
-
-        DB::table('user_pet_vacinas')
-            ->where('id', $vacina_id)
-            ->update($data);
+        $vacina->save();
 
         return response()->json([
             'message' => 'Vacina atualizada com sucesso!'
@@ -109,21 +96,18 @@ class VacinaController extends Controller
 
     public function deleteUserPetVacina(int $pet_id, int $vacina_id)
     {
-        $pet_exists = DB::table('pets')
-            ->where('id', $pet_id)
+        $pet = Pet::where('id', $pet_id)
             ->where('user_id', auth()->id())
-            ->exists();
+            ->first();
 
-        if (! $pet_exists) {
+        if (! $pet) {
             return response()->json([
                 'message' => 'Pet not found'
             ], 404);
         }
 
-        $vacina = DB::table('user_pet_vacinas')
-            ->where('id', $vacina_id)
+        $vacina = Vacina::where('id', $vacina_id)
             ->where('pet_id', $pet_id)
-            ->select(['foto'])
             ->first();
 
         if (! $vacina) {
@@ -132,13 +116,8 @@ class VacinaController extends Controller
             ], 404);
         }
 
-        if (!empty($vacina->foto) && Storage::disk('public')->exists($vacina->foto)) {
-            Storage::disk('public')->delete($vacina->foto);
-        }
-
-        DB::table('user_pet_vacinas')
-            ->where('id', $vacina_id)
-            ->delete();
+        $vacina->deleteFoto();
+        $vacina->delete();
 
         return response()->json([
             'message' => 'Vacina deletada com sucesso!'
