@@ -58,14 +58,14 @@ class AuthController extends Controller
             if($user->email_verified_at == null){
 
                 return response()->json(['status' => false, 'message' => __('messages.account_not_verify') ]);
-          
+
             }
          }
 
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
             $user = Auth::user();
 
-            if($user->roles()->count() == 1){ 
+            if($user->roles()->count() == 1){
                 if($user->hasRole('pet_store') && enableMultivendor() == "0"){
                     return response()->json(['status' => false, 'message' => __('messages.login_error')]);
                 }
@@ -89,7 +89,7 @@ class AuthController extends Controller
             Artisan::call('view:clear');
             // Artisan::call('config:cache'); // Comentado para evitar recriar cache
             Artisan::call('route:clear');
-            
+
             $loginResource = new LoginResource($user);
             $message = __('messages.user_login');
 
@@ -109,7 +109,7 @@ class AuthController extends Controller
         } else {
             $user_data = User::where('email', $input['email'])->first();
         }
-     
+
 
         if ($user_data != null) {
 
@@ -121,11 +121,11 @@ class AuthController extends Controller
             $usertype = $user_data->user_type;
 
             if($usertype == "vet" || $usertype == "groomer" || $usertype == "walker" || $usertype == "boarder" || $usertype == "trainer" || $usertype == "day_taker"){
-    
+
                 if($user_data->email_verified_at == null){
-    
+
                     return response()->json(['status' => false, 'message' => __('messages.account_not_verify') ]);
-              
+
                 }
              }
 
@@ -204,7 +204,7 @@ class AuthController extends Controller
                     'employee_id' => $user->id,
                     'commission_id' => $commission->id,
                 ]);
-    
+
                 $branch_data = [
                     'employee_id' => $user->id,
                     'branch_id' => 1,
@@ -212,12 +212,12 @@ class AuthController extends Controller
                 BranchEmployee::create($branch_data);
              }
 
-                 
+
             \Illuminate\Support\Facades\Artisan::call('view:clear');
             \Illuminate\Support\Facades\Artisan::call('cache:clear');
             \Illuminate\Support\Facades\Artisan::call('route:clear');
             \Illuminate\Support\Facades\Artisan::call('config:clear');
-            \Illuminate\Support\Facades\// Artisan::call('config:cache'); // Comentado para evitar recriar cache
+            // \Illuminate\Support\Facades\Artisan::call('config:cache'); // Comentado para evitar recriar cache
 
             // if ($user->hasRole('user')) {
             //     return $this->sendError(__('messages.role_not_matched'), ['error' => __('messages.unauthorised')], 200);
@@ -233,11 +233,11 @@ class AuthController extends Controller
             $usertype = $user_data->user_type;
 
             if($usertype == "vet" || $usertype == "groomer" || $usertype == "walker" || $usertype == "boarder" || $usertype == "trainer" || $usertype == "day_taker"){
-    
+
                 if($user_data->email_verified_at == null){
-    
+
                     return response()->json(['status' => false, 'message' => __('messages.account_not_verify') ]);
-              
+
                 }
              }
 
@@ -378,18 +378,18 @@ class AuthController extends Controller
             $request->file('profile_image');
 
             storeMediaFile($user_data, $request->file('profile_image'), 'profile_image');
-        }     
+        }
 
         $user_profile = UserProfile::where('user_id', $user->id)->first();
 
 
          if(!$user_profile) {
-   
+
             $user_profile = new UserProfile();
             $user_profile->user_id = $user->id;
          }
 
-     
+
         if ($request->has('expert')) {
             $user_profile->expert = $request->expert;
         }
@@ -412,7 +412,7 @@ class AuthController extends Controller
         if($user_profile !=''){
 
             $user_profile->save();
-   
+
          }
 
         $user_data->save();
@@ -457,7 +457,7 @@ class AuthController extends Controller
 
                     EmployeeCommission::where($commission_data)->delete();
                 }
-                
+
                 Artisan::call('cache:clear');
                 Artisan::call('config:clear');
                 Artisan::call('view:clear');
