@@ -15,7 +15,7 @@
     </div>
 
   <div v-if="is_quick_booking == 1" class="mb-3">
-    <pre class="text-dark">&lt;iframe&nbsp;src=&quot;https://faculdog.com.br/quick&#45;booking&quot;&nbsp;frameborder=&quot;0&quot;&nbsp;scrolling=&quot;yes&quot;&nbsp;style=&quot;display:block;&nbsp;width:100%;&nbsp;height:100vh;&quot;&gt;&lt;/iframe&gt;</pre>
+    <pre class="text-dark">&lt;iframe&nbsp;src=&quot;https://petstaff.com.br/quick&#45;booking&quot;&nbsp;frameborder=&quot;0&quot;&nbsp;scrolling=&quot;yes&quot;&nbsp;style=&quot;display:block;&nbsp;width:100%;&nbsp;height:100vh;&quot;&gt;&lt;/iframe&gt;</pre>
     <h6>{{ $t('quick_booking.lbl_shared_link') }}</h6>
      <a :href="url" target="_blank">{{ url }}</a>
   </div>
@@ -97,7 +97,3 @@ const display_submit_message = (res) => {
   color: #888;
 }
 </style>
-
-
-
-
