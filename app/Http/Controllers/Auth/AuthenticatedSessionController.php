@@ -62,7 +62,6 @@ class AuthenticatedSessionController extends Controller
                 Artisan::call('cache:clear');
                 Artisan::call('config:clear');
                 Artisan::call('view:clear');
-                // Artisan::call('config:cache'); // Comentado para evitar recriar cache com configurações antigas
                 Artisan::call('route:clear');
     
                 return redirect('/');
@@ -74,7 +73,7 @@ class AuthenticatedSessionController extends Controller
 
         }else{
 
-            $message = 'Este serviço está inativo. o administrador.';
+            $message = 'Este serviço está inativo. Contate o administrador.';
             return back()->withErrors([
                 'custom_message' => $message,
             ]);
@@ -89,7 +88,7 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request)
     {
-        Auth::logout();
+        Auth::guard('web')->logout();
 
         $request->session()->invalidate();
 

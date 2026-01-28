@@ -17,26 +17,44 @@ class CurrencyDatabaseSeeder extends Seeder
     {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
+        // ALWAYS create default currency (required for system to work)
+        $defaultCurrency = Currency::where('is_primary', 1)->first();
+        if (!$defaultCurrency) {
+            Currency::create([
+                'currency_name' => 'Real Brasileiro',
+                'currency_symbol' => 'R$',
+                'currency_code' => 'BRL',
+                'currency_position' => 'left',
+                'no_of_decimal' => 2,
+                'thousand_separator' => '.',
+                'decimal_separator' => ',',
+                'is_primary' => 1,
+            ]);
+        }
+
+        // Additional currencies only with IS_DUMMY_DATA
         if (env('IS_DUMMY_DATA')) {
-            $data = [
+            $currencies = [
                 [
-                    'currency_name' => 'Doller',
+                    'currency_name' => 'Dollar',
                     'currency_symbol' => '$',
                     'currency_code' => 'USD',
                     'currency_position' => 'left',
                     'no_of_decimal' => 2,
                     'thousand_separator' => ',',
                     'decimal_separator' => '.',
-                    'is_primary' => 1,
+                    'is_primary' => 0,
                 ],
             ];
 
-            foreach ($data as $key => $value) {
-                Currency::create($value);
+            foreach ($currencies as $value) {
+                $exists = Currency::where('currency_code', $value['currency_code'])->first();
+                if (!$exists) {
+                    Currency::create($value);
+                }
             }
         }
 
-        // Enable foreign key checks!
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

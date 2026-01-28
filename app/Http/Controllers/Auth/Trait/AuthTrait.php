@@ -20,30 +20,30 @@ trait AuthTrait
 {
     protected function loginTrait($request)
     {
-        $email = $request->email;
-        $password = $request->password;
         $remember = $request->remember_me;
 
-    
-           if (Auth::attempt(['email' => $email, 'password' => $password, 'status' => 1], $remember)) {
-                if(auth()->user()->roles()->count() == 1){
-                    if(auth()->user()->hasRole('pet_store') && enableMultivendor() == "0")     {
-                        Auth::logout();
-                        return false;
-                    }
-                }
+        if (Auth::guard('web')->attempt([
+            'email' => $request->email,
+            'password' => $request->password,
+            'status' => 1
+        ], $remember)) {
 
-                // if(auth()->user()->hasRole('user')){
-                //     Auth::logout();
-                //     return false;
-                // }
+            $user = Auth::guard('web')->user();
 
-                event(new UserLoginSuccess($request, auth()->user()));
-
-                return true;
+            if ($user->hasRole('pet_store') && enableMultivendor() == "0") {
+                Auth::guard('web')->logout();
+                session()->flash(
+                    'error',
+                    'Este tipo de conta não pode acessar o painel no momento.'
+                );
+                return false;
             }
 
-             return false;
+            event(new UserLoginSuccess($request, $user));
+            return true;
+        }
+
+        return false;
     }
 
     protected function checkService($request){
@@ -177,7 +177,6 @@ trait AuthTrait
         \Illuminate\Support\Facades\Artisan::call('cache:clear');
         \Illuminate\Support\Facades\Artisan::call('route:clear');
         \Illuminate\Support\Facades\Artisan::call('config:clear');
-        // \Illuminate\Support\Facades\Artisan::call('config:cache'); // Comentado para evitar recriar cache
 
         event(new Registered($user));
         event(new UserRegistered($user));

@@ -40,17 +40,16 @@ class CurrencyChange
         }
 
         if ($array) {
-            return $this->defaultCurrency->toArray() ?? [];
+            // Handle both Eloquent models and stdClass objects
+            if (method_exists($this->defaultCurrency, 'toArray')) {
+                return $this->defaultCurrency->toArray();
+            }
+            return (array) $this->defaultCurrency;
         }
 
         return $this->defaultCurrency;
     }
 
-    // public function convert($amount, $fromCurrency, $toCurrency)
-    // {
-    //     // Implement your currency conversion logic here
-    // }
-    
     public function defaultSymbol()
     {
         return $this->defaultCurrency->currency_symbol ?? 'R$';
